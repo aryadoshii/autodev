@@ -1,0 +1,93 @@
+# AutoDev - Production .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+output/logs/*.log
+
+# Generated Projects (Keep structure but ignore generated code)
+output/projects/*
+!output/projects/.gitkeep
+
+# Test Coverage
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.hypothesis/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# API Keys & Secrets
+secrets/
+*.key
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# Node (for frontend projects)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Execution logs
+execution_log.json
+output/logs/execution_*.json

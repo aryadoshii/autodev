@@ -1,0 +1,27 @@
+# AutoDev - AI Full-Stack Development Team
+# Production Requirements with CrewAI Framework
+
+# CrewAI Framework
+crewai==0.86.0
+crewai-tools==0.17.0
+
+# LLM & API
+httpx==0.27.0
+pydantic==2.6.1
+python-dotenv==1.0.1
+langchain==0.3.13
+langchain-core==0.3.28
+
+# Logging
+loguru==0.7.2
+
+# Code Quality
+black==24.2.0
+ruff==0.2.2
+
+# Testing (for generated projects)
+pytest==8.0.2
+pytest-asyncio==0.23.5
+
+# Utilities
+rich==13.7.0
