@@ -1,95 +1,104 @@
 """
-Custom Qwen LLM Wrapper for CrewAI (Fixed for v0.63+)
-Integrates Qwen3-Coder-30B via Qubrid API
+Custom Qwen LLM Wrapper for CrewAI
+Implements "Trojan Horse" Bypass to fix LiteLLM Provider Errors.
 """
 
-from langchain.llms.base import LLM
-from typing import Optional, List, Any, Mapping
-import httpx
 import os
+import httpx
+from typing import Any, List, Optional
 from loguru import logger
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.outputs import ChatResult, ChatGeneration
 
-
-class QwenLLM(LLM):
-    """Custom LLM wrapper for Qwen3-Coder via Qubrid API"""
-    
-    # Define as regular attributes, not Pydantic Fields
-    api_key: str
-    base_url: str = "https://api.qubrid.ai/v1"
-    model_name: str = "Qwen/Qwen3-Coder-30B-A3B-Instruct"
-    temperature: float = 0.2
-    max_tokens: int = 4000
+class QwenLLM(ChatOpenAI):
+    """
+    Custom LLM that acts like GPT-4 to pass validation, 
+    but calls Qwen3-Coder via Qubrid in reality.
+    """
     
     def __init__(self, **kwargs):
-        # Get API key from env if not provided
-        if 'api_key' not in kwargs:
-            kwargs['api_key'] = os.getenv("QUBRID_API_KEY")
-        
-        # Set defaults
-        kwargs.setdefault('base_url', "https://api.qubrid.ai/v1")
-        kwargs.setdefault('model_name', "Qwen/Qwen3-Coder-30B-A3B-Instruct")
-        kwargs.setdefault('temperature', 0.2)
-        kwargs.setdefault('max_tokens', 4000)
-        
-        super().__init__(**kwargs)
-    
-    @property
-    def _llm_type(self) -> str:
-        return "qwen-coder"
-    
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        **kwargs: Any,
-    ) -> str:
-        """Call Qwen API"""
-        
-        try:
-            payload = {
-                "model": self.model_name,
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "You are Qwen3-Coder, an expert code generation assistant. Generate clean, production-ready code with proper documentation. Always output valid JSON when requested."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                "temperature": self.temperature,
-                "max_tokens": self.max_tokens,
-                "stream": False
-            }
+        # Get credentials
+        api_key = kwargs.get('api_key') or os.getenv("QUBRID_API_KEY")
+        if not api_key:
+            raise ValueError("QUBRID_API_KEY not found")
             
+        base_url = "https://platform.qubrid.com/api/v1/qubridai"
+        
+        # 1. THE TROJAN HORSE: We tell CrewAI this is "gpt-4"
+        # This satisfies LiteLLM/Pydantic validation so they don't crash.
+        super().__init__(
+            openai_api_key=api_key,
+            openai_api_base=base_url,
+            model="gpt-4",  # <--- FAKE MODEL NAME TO PASS VALIDATION
+            temperature=0.2,
+            max_tokens=4000,
+            tiktoken_model_name="gpt-4",
+            **kwargs
+        )
+        
+        # Store real credentials and model
+        self.qubrid_api_key = api_key
+        self.qubrid_base_url = base_url
+        self.real_model_name = "Qwen/Qwen3-Coder-30B-A3B-Instruct"
+
+    def _generate(
+        self,
+        messages: List[BaseMessage],
+        stop: Optional[List[str]] = None,
+        run_manager: Any = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        """
+        Override generation to use HTTPX with the REAL model name.
+        """
+        # Format messages for Qubrid/OpenAI format
+        formatted_messages = []
+        for msg in messages:
+            role = "user"
+            if isinstance(msg, SystemMessage):
+                role = "system"
+            elif isinstance(msg, HumanMessage):
+                role = "user"
+            elif msg.type == "ai":
+                role = "assistant"
+            
+            formatted_messages.append({"role": role, "content": msg.content})
+
+        # Construct Payload with the REAL model
+        payload = {
+            "model": self.real_model_name, # <--- USING REAL MODEL HERE
+            "messages": formatted_messages,
+            "temperature": 0.2,
+            "max_tokens": 4000,
+            "stream": False
+        }
+
+        try:
+            # Direct HTTP call to bypass LiteLLM bugs
             with httpx.Client(timeout=120.0) as client:
                 response = client.post(
-                    f"{self.base_url}/chat/completions",
+                    f"{self.qubrid_base_url}/chat/completions",
                     headers={
-                        "Authorization": f"Bearer {self.api_key}",
+                        "Authorization": f"Bearer {self.qubrid_api_key}",
                         "Content-Type": "application/json"
                     },
                     json=payload
                 )
-                response.raise_for_status()
                 
-                result = response.json()
-                generated_text = result["choices"][0]["message"]["content"]
+                if response.status_code != 200:
+                    logger.error(f"❌ API Error {response.status_code}: {response.text}")
+                    raise ValueError(f"Qubrid API Error: {response.text}")
                 
-                logger.success(f"✅ Generated {len(generated_text)} characters")
-                return generated_text
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
                 
+                # Return standard LangChain result
+                generation = ChatGeneration(
+                    message=BaseMessage(content=content, type="ai")
+                )
+                return ChatResult(generations=[generation])
+
         except Exception as e:
-            logger.error(f"❌ Qwen API call failed: {str(e)}")
-            raise
-    
-    @property
-    def _identifying_params(self) -> Mapping[str, Any]:
-        """Return identifying parameters"""
-        return {
-            "model_name": self.model_name,
-            "temperature": self.temperature,
-            "max_tokens": self.max_tokens,
-            "base_url": self.base_url
-        }
+            logger.error(f"❌ Generation Failed: {str(e)}")
+            raise e

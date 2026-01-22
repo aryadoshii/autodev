@@ -43,19 +43,8 @@ class QwenCoderClient:
         max_tokens: int = 4000,
         conversation_history: Optional[List[Dict]] = None
     ) -> str:
-        """
-        Generate code using Qwen3-Coder API
+        """Generate code using Qwen3-Coder API"""
         
-        Args:
-            prompt: User instruction for code generation
-            system_prompt: System message to set context
-            temperature: Sampling temperature (0.1-0.3 recommended for code)
-            max_tokens: Maximum tokens in response
-            conversation_history: Previous messages for context
-        
-        Returns:
-            Generated code as string
-        """
         if system_prompt is None:
             system_prompt = (
                 "You are an expert software developer specializing in clean, "
@@ -94,8 +83,7 @@ class QwenCoderClient:
                     
                     result = response.json()
                     
-                    
-                    # Handle the response format
+                    # Handle different response formats
                     if "choices" in result:
                         generated_text = result["choices"][0]["message"]["content"]
                     elif "message" in result:
@@ -184,21 +172,6 @@ class QwenCoderClient:
             "iterations": max_iterations,
             "feedback": feedback
         }
-    
-    async def batch_generate(self, prompts: List[str], **kwargs) -> List[str]:
-        """Generate code for multiple prompts concurrently"""
-        tasks = [self.generate_code(prompt, **kwargs) for prompt in prompts]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        outputs = []
-        for i, result in enumerate(results):
-            if isinstance(result, Exception):
-                logger.error(f"Prompt {i} failed: {str(result)}")
-                outputs.append(f"# Generation failed: {str(result)}")
-            else:
-                outputs.append(result)
-        
-        return outputs
 
 
 _client_instance = None
@@ -209,28 +182,3 @@ def get_qwen_client() -> QwenCoderClient:
     if _client_instance is None:
         _client_instance = QwenCoderClient()
     return _client_instance
-
-
-async def test_client():
-    """Test the Qwen3-Coder client"""
-    client = QwenCoderClient()
-    
-    test_prompt = """
-    Create a Python function that calculates the Fibonacci sequence up to n terms.
-    Include:
-    - Type hints
-    - Docstring
-    - Error handling for invalid inputs
-    - Example usage
-    """
-    
-    print("Testing Qwen3-Coder API...")
-    result = await client.generate_code(test_prompt, max_tokens=1000)
-    print("\n" + "="*50)
-    print("Generated Code:")
-    print("="*50)
-    print(result)
-
-
-if __name__ == "__main__":
-    asyncio.run(test_client())
