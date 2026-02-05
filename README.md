@@ -97,34 +97,6 @@ recipe-manager/
 
 ---
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-```bash
-✅ Python 3.10 or higher
-✅ API key (free tier available)
-```
-
-### Installation
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/aryadoshii/autodev.git
-cd autodev
-
-# 2. Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Configure environment
-cp .env.example .env
-# Edit .env and add your API key
-```
-
 ### Usage
 
 ```bash
@@ -289,6 +261,35 @@ Generated:
 </div>
 
 ---
+
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+```bash
+✅ Python 3.10 or higher
+✅ API key (free tier available)
+```
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/aryadoshii/autodev.git
+cd autodev
+
+# 2. Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Configure environment
+cp .env.example .env
+# Edit .env and add your API key
+```
 
 ## 🤝 Contributing
 
