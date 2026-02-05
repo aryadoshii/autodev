@@ -1,0 +1,150 @@
+analysis_task:
+  description: >
+    Analyze the user requirements: '{user_requirements}'.
+    
+    Identify:
+    - Core features
+    - Data entities
+    - Technology stack
+    - App architecture
+  
+  expected_output: >
+    Output MUST be a valid JSON object (use double quotes, not single quotes).
+    
+    Format:
+    {{
+      "app_name": "string",
+      "app_type": "string",
+      "core_features": ["feature1", "feature2"],
+      "data_entities": ["entity1", "entity2"],
+      "tech_stack": {{
+        "backend": "FastAPI",
+        "frontend": "React",
+        "database": "PostgreSQL"
+      }}
+    }}
+    
+    CRITICAL: Output ONLY the JSON. No markdown, no explanations, no code blocks.
+
+db_design_task:
+  description: >
+    Design the database schema for the application.
+    Create SQLAlchemy models with proper relationships.
+  
+  expected_output: >
+    Output a JSON object where:
+    - Keys are filenames (e.g., "models.py", "database.py")
+    - Values are the complete Python code as a SINGLE STRING
+    
+    CRITICAL RULES:
+    1. Escape ALL newlines in code: use \\n instead of actual newlines
+    2. Escape ALL double quotes in code: use \\" for quotes inside strings
+    3. Do NOT wrap in markdown code blocks
+    4. Output ONLY valid JSON
+    
+    Example:
+    {{
+      "models.py": "from sqlalchemy import Column, Integer, String\\nfrom sqlalchemy.ext.declarative import declarative_base\\n\\nBase = declarative_base()\\n\\nclass User(Base):\\n    __tablename__ = \\"users\\"\\n    id = Column(Integer, primary_key=True)"
+    }}
+
+backend_task:
+  description: >
+    Generate FastAPI backend code.
+    Include:
+    - Main application file
+    - API routes
+    - Pydantic schemas
+    - Database configuration
+    - Authentication (JWT if needed)
+  
+  expected_output: >
+    Output a JSON object where:
+    - Keys are file paths (e.g., "main.py", "app/routes/users.py")
+    - Values are complete Python code as SINGLE STRINGS with \\n for newlines
+    
+    CRITICAL: All newlines MUST be \\n. All quotes MUST be \\". No markdown blocks.
+    
+    Example:
+    {{
+      "main.py": "from fastapi import FastAPI\\n\\napp = FastAPI()\\n\\n@app.get(\\"/\\")\\ndef read_root():\\n    return {{\\"message\\": \\"Hello World\\"}}",
+      "requirements.txt": "fastapi==0.104.1\\nuvicorn==0.24.0"
+    }}
+
+frontend_task:
+  description: >
+    Generate React frontend code.
+    Include:
+    - Main App component
+    - Page components
+    - Reusable UI components
+    - API service functions
+    - Routing setup
+    - Styling (Tailwind or CSS)
+  
+  expected_output: >
+    Output a JSON object where:
+    - Keys are file paths (e.g., "App.jsx", "components/Header.jsx")
+    - Values are complete code as SINGLE STRINGS with \\n for newlines
+    
+    CRITICAL: Escape newlines (\\n) and quotes (\\"). No markdown.
+    
+    Example:
+    {{
+      "App.jsx": "import React from 'react';\\n\\nfunction App() {{\\n  return <h1>Hello</h1>;\\n}}\\n\\nexport default App;",
+      "index.html": "<!DOCTYPE html>\\n<html>\\n<head><title>App</title></head>\\n</html>"
+    }}
+
+qa_task:
+  description: >
+    Generate comprehensive test suites.
+    Include:
+    - Backend unit tests (pytest)
+    - Frontend tests (Jest/React Testing Library)
+    - Integration tests
+    - E2E tests (if applicable)
+  
+  expected_output: >
+    Output a JSON object:
+    {{
+      "backend/test_main.py": "import pytest\\nfrom fastapi.testclient import TestClient\\n\\ndef test_root():\\n    assert True",
+      "frontend/App.test.jsx": "import {{ render }} from '@testing-library/react';\\n\\ntest('renders', () => {{\\n  render(<App />);\\n}});"
+    }}
+    
+    CRITICAL: Escape newlines and quotes. No markdown.
+
+devops_task:
+  description: >
+    Generate deployment configuration.
+    Include:
+    - Dockerfile for backend
+    - Dockerfile for frontend
+    - docker-compose.yml
+    - .github/workflows/ci.yml (CI/CD pipeline)
+    - .env.example
+  
+  expected_output: >
+    Output a JSON object:
+    {{
+      "Dockerfile": "FROM python:3.11\\nWORKDIR /app\\nCOPY . .\\nRUN pip install -r requirements.txt",
+      "docker-compose.yml": "version: '3.8'\\nservices:\\n  backend:\\n    build: .\\n    ports:\\n      - \\"8000:8000\\""
+    }}
+    
+    CRITICAL: Escape newlines. For YAML files, preserve proper indentation with \\n.
+
+documentation_task:
+  description: >
+    Generate comprehensive documentation.
+    Include:
+    - README.md with setup instructions
+    - API.md with endpoint documentation
+    - CONTRIBUTING.md
+    - Architecture overview
+  
+  expected_output: >
+    Output a JSON object:
+    {{
+      "README.md": "# Project Name\\n\\n## Setup\\n\\n1. Clone repo\\n2. Run docker-compose up",
+      "API.md": "# API Documentation\\n\\n## Endpoints\\n\\n### GET /users\\nReturns list of users"
+    }}
+    
+    CRITICAL: For markdown files, escape newlines properly (\\n for new lines, \\n\\n for paragraphs).

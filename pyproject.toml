@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "apscheduler>=3.11.2",
     "crewai>=1.8.1",
+    "email-validator>=2.3.0",
+    "fastapi>=0.128.0",
+    "fastapi-sso>=0.17.0",
     "httpx>=0.28.1",
     "langchain-openai>=0.3.23",
     "litellm>=1.75.3",

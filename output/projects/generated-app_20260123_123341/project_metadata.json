@@ -1,0 +1,20 @@
+{
+  "project_name": "generated-app",
+  "generated_at": "20260123_123341",
+  "project_type": "Unknown",
+  "tech_stack": {
+    "backend": "FastAPI",
+    "frontend": "React + Vite",
+    "database": "PostgreSQL",
+    "styling": "Tailwind CSS"
+  },
+  "statistics": {
+    "models": 0,
+    "backend_routes": 0,
+    "frontend_components": 0,
+    "frontend_pages": 0,
+    "backend_tests": 0,
+    "frontend_tests": 0,
+    "e2e_tests": 0
+  }
+}

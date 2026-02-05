@@ -1,0 +1,30 @@
+{
+  "app_name": "Simple Calculator",
+  "timestamp": "20260123_161712",
+  "specification": {
+    "app_name": "Simple Calculator",
+    "app_type": "Web Application",
+    "core_features": [
+      "Basic arithmetic operations (addition, subtraction, multiplication, division)",
+      "Clear functionality to reset the calculator",
+      "Display of current input and results",
+      "Handle decimal numbers",
+      "Error handling for invalid operations (like division by zero)",
+      "Keyboard support for input"
+    ],
+    "data_entities": [
+      "CalculationHistory",
+      "CurrentInput",
+      "Result",
+      "Operator",
+      "Operand"
+    ],
+    "tech_stack": {
+      "backend": "None",
+      "frontend": "React",
+      "database": "None"
+    }
+  },
+  "files_generated": 17,
+  "generated_by": "AutoDev v1.0"
+}

@@ -1,8 +1,9 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
-.pytest_cache/
+.Python
 *.egg-info/
 dist/
 build/
@@ -10,9 +11,9 @@ build/
 # Virtual Environment
 venv/
 .venv/
-env/
+ENV/
 
-# Environment
+# Environment Variables
 .env
 .env.local
 
@@ -21,10 +22,21 @@ env/
 .idea/
 *.swp
 
-# Project
-autodev_backup_*/
-debug_output_*.txt
-execution_log.json
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+
+# Node
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
 
 # OS
 .DS_Store
